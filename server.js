@@ -1,9 +1,33 @@
 const EventEmitter = require('events')
-const readline = require('readline')
 
-const rl = readline.createInterface({
-    input:process.stdin,
-    output:process.stdout
-})
+class Server extends EventEmitter{
+    constructor(client){
+        super()
+        client.on('command',command=>{
+            switch(command){
+                case 'help' :
+                case 'add'  :
+                case 'ls'   :
+                case 'delete':
+                    this[command]()
+                    break
+                default:
+                    this.emit('response', 'Unknown commanda')         
+            }
+        })
+    }
+    help(){
+        this.emit('response','help ...')
+    }
+    add(){
+        this.emit('response','add ...')
+    }
+    ls(){
+        this.emit('response','ls ...')
+    }
+    delete(){
+        this.emit('response','delete ...')
+    }
+}
 
-const client = new EventEmitter()
+module.exports = (client)=> new Server(client) 
