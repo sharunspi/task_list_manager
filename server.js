@@ -3,30 +3,51 @@ const EventEmitter = require('events')
 class Server extends EventEmitter{
     constructor(client){
         super()
-        client.on('command',command=>{
+        this.tasks = {}
+        this.taskId = 1
+        process.nextTick(()=>{
+            this.emit('response','Type a command')
+        })
+        this.emit('response', 'Type a command ')
+        client.on('command',(command,args)=>{
             switch(command){
                 case 'help' :
                 case 'add'  :
                 case 'ls'   :
                 case 'delete':
-                    this[command]()
+                    this[command](args)
                     break
                 default:
                     this.emit('response', 'Unknown commanda')         
             }
         })
     }
-    help(){
-        this.emit('response','help ...')
+    tasksString(){
+        return Object.keys(this.tasks).map(key=>{
+            return `${key}: ${this.tasks[key]}`
+        }).join('\n')
     }
-    add(){
-        this.emit('response','add ...')
+    help(){
+        this.emit('response',`All commands
+        add task
+        ls
+        delete :id
+        `)
+    }
+    add(args){
+        this.tasks[this.taskId] = args.join(' ')
+        this.emit('response',`Added task ${this.taskId}`)
+        this.taskId++
     }
     ls(){
-        this.emit('response','ls ...')
+            this.tasksString().length >0 
+        ?   this.emit('response',`Tasks:\n ${this.tasksString()}`)
+        :   this.emit('response',`Tasks are empty`)
+        
     }
-    delete(){
-        this.emit('response','delete ...')
+    delete(args){
+        delete(this.tasks[args[0]])
+        this.emit('response',`Deleted task ${args[0]}`)
     }
 }
 
