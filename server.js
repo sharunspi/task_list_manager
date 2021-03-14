@@ -36,7 +36,7 @@ class Server extends EventEmitter{
     }
     add(args){
         this.tasks[this.taskId] = args.join(' ')
-        this.emit('response',`Added task ${this.taskId}`)
+        this.emit('response',`Added task ${this.taskId} \n ${this.tasks[this.taskId]}`)
         this.taskId++
     }
     ls(){
@@ -46,8 +46,12 @@ class Server extends EventEmitter{
         
     }
     delete(args){
+       if(this.tasks.length >0){
         delete(this.tasks[args[0]])
         this.emit('response',`Deleted task ${args[0]}`)
+       }else{
+        this.emit('response',`No tasks available`)   
+       }
     }
 }
 
